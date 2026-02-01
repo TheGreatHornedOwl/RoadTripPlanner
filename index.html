@@ -1222,16 +1222,19 @@
         // Save to localStorage
         localStorage.setItem('roadtripUser', JSON.stringify(currentUser));
         
-        // Request Google Drive access token with necessary scopes
-        requestGoogleDriveAccess();
-        
         updateUIForUser();
         showNotification(`Welcome, ${currentUser.name}!`, 'success');
+        
+        // Request Google Drive access token with necessary scopes
+        setTimeout(() => requestGoogleDriveAccess(), 500);
       }
     }
 
     // Request Google Drive access with OAuth 2.0
     function requestGoogleDriveAccess() {
+      // Show the section immediately
+      document.getElementById('gdriveSyncSection').style.display = 'block';
+      
       if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
         const tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: googleClientId,
@@ -1240,12 +1243,16 @@
             if (tokenResponse && tokenResponse.access_token) {
               googleAccessToken = tokenResponse.access_token;
               localStorage.setItem('googleAccessToken', googleAccessToken);
-              // Show Google Drive sync section
-              document.getElementById('gdriveSyncSection').style.display = 'block';
+              showNotification('Google Drive access granted!', 'success');
+            } else if (tokenResponse && tokenResponse.error) {
+              showNotification('Drive access denied. You can still use local storage.', 'info');
             }
           },
         });
         tokenClient.requestAccessToken();
+      } else {
+        // Fallback - show section anyway
+        showNotification('Google Drive sync available - connect to enable', 'info');
       }
     }
 
@@ -1457,16 +1464,14 @@
         document.getElementById('userAvatar').src = currentUser.picture;
         document.getElementById('userName').textContent = currentUser.name;
         
-        // Show Google Drive section if access token exists
-        if (googleAccessToken) {
-          gdriveSyncSection.style.display = 'block';
-          
-          // If file ID is saved, show connected state
-          if (googleDriveFileId) {
-            document.getElementById('gdriveSetup').style.display = 'none';
-            document.getElementById('gdriveActions').style.display = 'flex';
-            document.getElementById('gdriveStatus').innerHTML = '<span class="gdrive-status connected">✓ Connected</span>';
-          }
+        // Always show Google Drive section when logged in
+        gdriveSyncSection.style.display = 'block';
+        
+        // If file ID is saved, show connected state
+        if (googleDriveFileId) {
+          document.getElementById('gdriveSetup').style.display = 'none';
+          document.getElementById('gdriveActions').style.display = 'flex';
+          document.getElementById('gdriveStatus').innerHTML = '<span class="gdrive-status connected">✓ Connected</span>';
         }
       } else {
         // Show logged out view

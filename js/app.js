@@ -2,7 +2,6 @@ function bootstrap() {
   loadAppState();
   loadSavedUser?.();
   renderTimeline();
-  wireEvents();
   wireMenuEvents();
 }
 

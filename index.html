@@ -1,163 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Road Trip Planner</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=Libre+Baskerville:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Optional: silence favicon 404 -->
+  <link rel="icon" href="data:,">
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <h1>ROAD TRIP</h1>
-      <div class="tagline" onclick="editSubtitle()" id="subtitle" title="Click to edit">Plan Your Perfect Journey</div>
-      <div id="userIndicator" class="user-indicator" style="display: none;">
-        <img id="userAvatar" class="user-avatar" src="" alt="">
-        <span id="userName"></span>
-      </div>
-    </header>
+  <!-- Header -->
+  <header class="header">
+    <button class="hamburger-btn js-menu-toggle" aria-label="Toggle menu">
+      ☰
+    </button>
 
-    <!-- Map View Button -->
-    <div class="map-menu">
-      <button class="map-btn" onclick="openMapView()" title="View on Map">
-        🗺️
-      </button>
-    </div>
-
-    <!-- Hamburger Menu -->
-    <div class="hamburger-menu">
-      <button class="hamburger-btn" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-
-    <div class="menu-overlay" onclick="toggleMenu()"></div>
-    <div class="menu-panel">
-      <!-- User Profile Section -->
-      <div class="user-profile-section">
-        <div id="loggedOutView">
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px;">Account</h3>
-          <div id="googleButtonContainer"></div>
-        </div>
-
-        <div id="loggedInView" style="display: none;">
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px;">Account</h3>
-          <div class="user-profile-card">
-            <img id="menuUserAvatar" class="user-profile-avatar" src="" alt="">
-            <div class="user-profile-name" id="menuUserName"></div>
-            <div class="user-profile-email" id="menuUserEmail"></div>
-          </div>
-          <button class="btn-danger" onclick="logout()" style="width: 100%;">Logout</button>
-        </div>
-      </div>
-
-      <div class="menu-section">
-        <h3>Add Activity</h3>
-        <button class="btn-primary" onclick="openAddModal(); toggleMenu();">+ New Activity</button>
-      </div>
-
-      <div class="menu-section">
-        <h3>Filter</h3>
-        <label for="filterDate" style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Select Date:</label>
-        <input type="date" id="filterDate" onchange="filterActivities()" style="width: 100%; margin-bottom: 0.8rem;">
-        <button class="btn-secondary" onclick="clearFilter()">Show All Days</button>
-      </div>
-
-      <div class="menu-section">
-        <h3>Tools</h3>
-        
-        <!-- Google Drive Sync Section -->
-        <div class="gdrive-sync-section" id="gdriveSyncSection" style="display: none;">
-          <div class="gdrive-sync-title">
-            📁 Google Drive Sync
-          </div>
-          <div id="gdriveStatus">
-            <span class="gdrive-status disconnected">Not Connected</span>
-          </div>
-          <div class="gdrive-input-group" id="gdriveSetup">
-            <input 
-              type="text" 
-              id="gdriveFileId" 
-              placeholder="Enter Google Drive File ID"
-              value="1lxkUvkts9T0fmOPFrFihsPlC_IEOPq5M"
-            >
-            <div class="gdrive-button-group">
-              <button class="btn-secondary" onclick="connectGoogleDrive()">Connect</button>
-            </div>
-          </div>
-          <div class="gdrive-button-group" id="gdriveActions" style="display: none; margin-top: 1rem;">
-            <button class="btn-primary" onclick="syncFromGoogleDrive()">
-              🔄 Refresh
-            </button>
-            <button class="btn-secondary" onclick="saveToGoogleDrive()">
-              💾 Save to Drive
-            </button>
-            <button class="btn-danger btn-small" onclick="disconnectGoogleDrive()">
-              Disconnect
-            </button>
-          </div>
-        </div>
-        
-        <button class="btn-secondary" onclick="exportData(); toggleMenu();">Export Trip Data</button>
-        <button class="btn-secondary" onclick="openImportModal(); toggleMenu();">Import from JSON</button>
-        <button class="btn-danger" onclick="clearAllData()">Clear All Activities</button>
+    <div class="header-title">
+      <h1>Road Trip Planner</h1>
+      <div
+        id="subtitle"
+        class="editable-subtitle"
+        contenteditable="true"
+        spellcheck="false">
+        Plan Your Perfect Journey
       </div>
     </div>
+  </header>
 
-    <div id="timeline" class="timeline"></div>
-  </div>
+  <!-- Slide-out Menu -->
+  <div class="menu-overlay js-menu-toggle"></div>
 
-  <!-- Add/Edit Activity Modal -->
+  <nav class="menu-panel">
+    <button class="btn-primary js-menu-toggle">
+      New Activity
+    </button>
+
+    <button class="btn-secondary js-menu-toggle js-open-import">
+      Import Trip
+    </button>
+
+    <button class="btn-secondary js-menu-close js-export">
+      Export Trip
+    </button>
+
+    <hr />
+
+    <button class="btn-secondary js-menu-close js-google-login">
+      Sign in with Google
+    </button>
+
+    <button class="btn-secondary js-menu-close js-google-sync">
+      Sync with Google Drive
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div id="timeline"></div>
+  </main>
+
+  <!-- Activity Modal -->
   <div id="activityModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
       <h2 id="modalTitle">Add Activity</h2>
-      <div id="activityForm">
-        <div class="form-group">
-          <label for="activityType">Activity Type</label>
-          <select id="activityType" required>
-            <option value="driving">🚗 Driving</option>
-            <option value="eating">🍽️ Eating</option>
-            <option value="sleeping">🛏️ Sleeping</option>
-            <option value="other">🎯 Other</option>
-          </select>
-        </div>
 
-        <div class="form-group">
-          <label for="activityName">Activity Name</label>
-          <input type="text" id="activityName" placeholder="e.g., Lunch at Joe's Diner" required>
-        </div>
+      <form id="activityForm">
+        <!-- your existing form fields here -->
+      </form>
 
-        <div class="form-group">
-          <label for="address">Address</label>
-          <input type="text" id="address" placeholder="e.g., 123 Main St, Springfield, IL" required>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="startDateTime">Start Date & Time</label>
-            <input type="datetime-local" id="startDateTime" required>
-          </div>
-
-          <div class="form-group">
-            <label for="duration">Duration (hours)</label>
-            <input type="number" id="duration" step="0.25" min="0.25" placeholder="e.g., 1.5" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="notes">Notes (optional)</label>
-          <textarea id="notes" placeholder="Any special notes or details..."></textarea>
-        </div>
-
-        <div class="button-group">
-          <button type="button" class="btn-primary" onclick="saveActivity()">Save Activity</button>
-          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-        </div>
+      <div class="modal-actions">
+        <button class="btn-secondary js-modal-close">
+          Cancel
+        </button>
+        <button class="btn-primary js-save-activity">
+          Save Activity
+        </button>
       </div>
     </div>
   </div>
@@ -165,44 +92,36 @@
   <!-- Import Modal -->
   <div id="importModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeImportModal()">&times;</button>
-      <h2>Import Trip Data</h2>
-      <div class="form-group">
-        <label for="importJSON">Paste JSON Data</label>
-        <textarea id="importJSON" class="json-export" placeholder='{"activities": [...]}'></textarea>
-      </div>
-      <div class="button-group">
-        <button class="btn-primary" onclick="importData()">Import</button>
-        <button class="btn-secondary" onclick="closeImportModal()">Cancel</button>
+      <h2>Import Trip</h2>
+
+      <textarea
+        id="importJSON"
+        rows="10"
+        placeholder="Paste exported JSON here"></textarea>
+
+      <div class="modal-actions">
+        <button class="btn-secondary js-modal-close">
+          Cancel
+        </button>
+        <button class="btn-primary js-import-confirm">
+          Import
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Export Modal -->
-  <div id="exportModal" class="modal">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeExportModal()">&times;</button>
-      <h2>Export Trip Data</h2>
-      <div class="form-group">
-        <label for="exportJSON">Copy this JSON</label>
-        <textarea id="exportJSON" class="json-export" readonly></textarea>
-      </div>
-      <div class="button-group">
-        <button class="btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
-        <button class="btn-secondary" onclick="downloadJSON()">Download File</button>
-        <button class="btn-secondary" onclick="closeExportModal()">Close</button>
-      </div>
-    </div>
-  </div>
+  <!-- Notifications -->
+  <div id="notificationContainer"></div>
 
-<script src="js/state.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/activities.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/modals.js"></script>
-<script src="js/google-auth.js"></script>
-<script src="js/google-drive.js"></script>
-<script src="js/validation.js"></script>
-<script src="js/app.js"></script>
+  <!-- Scripts (ORDER MATTERS) -->
+  <script src="js/state.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/activities.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/google-auth.js"></script>
+  <script src="js/google-drive.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

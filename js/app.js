@@ -1,30 +1,29 @@
 function bootstrap() {
   loadAppState();
+  loadSavedUser?.();
   renderTimeline();
   wireEvents();
+  wireMenuEvents();
 }
 
-function wireEvents() {
-  document.body.addEventListener('click', e => {
-    if (e.target.dataset.edit) {
-      openEditModal(Number(e.target.dataset.edit));
+function wireMenuEvents() {
+  document.addEventListener('click', e => {
+    if (e.target.closest('.js-menu-toggle')) {
+      toggleMenu();
     }
 
-    if (e.target.dataset.delete) {
-      deleteActivityById(Number(e.target.dataset.delete));
-      renderTimeline();
+    if (e.target.closest('.js-menu-close')) {
+      closeMenu();
     }
   });
 }
 
-bootstrap();
-
 function importData() {
   try {
-    const raw = JSON.parse(
-      document.getElementById('importJSON').value
-    );
+    const textarea = document.getElementById('importJSON');
+    if (!textarea) throw new Error('Import field not found');
 
+    const raw = JSON.parse(textarea.value);
     const normalized = normalizeImportedData(raw);
 
     appState.subtitle = normalized.subtitle;
@@ -39,3 +38,13 @@ function importData() {
     showNotification(err.message, 'error');
   }
 }
+
+function toggleMenu() {
+  document.body.classList.toggle('menu-open');
+}
+
+function closeMenu() {
+  document.body.classList.remove('menu-open');
+}
+
+bootstrap();

@@ -1183,7 +1183,7 @@
           {
             theme: 'outline',
             size: 'large',
-            width: '100%',
+            width: 350,
             text: 'signin_with',
             shape: 'rectangular'
           }
@@ -1238,7 +1238,7 @@
       if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
         const tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: googleClientId,
-          scope: 'https://www.googleapis.com/auth/drive.file',
+          scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly',
           callback: (tokenResponse) => {
             if (tokenResponse && tokenResponse.access_token) {
               googleAccessToken = tokenResponse.access_token;
@@ -1334,9 +1334,10 @@
         return;
       }
       
+      const refreshBtn = event?.target;
+      
       try {
         // Show loading indicator
-        const refreshBtn = event?.target;
         if (refreshBtn) {
           refreshBtn.innerHTML = '<span class="refresh-indicator">🔄</span> Refreshing...';
           refreshBtn.disabled = true;
@@ -1358,6 +1359,9 @@
             localStorage.removeItem('googleAccessToken');
             showNotification('Session expired. Please reconnect.', 'error');
             requestGoogleDriveAccess();
+            return;
+          } else if (response.status === 403) {
+            showNotification('Access denied. Make sure the file is shared with you.', 'error');
             return;
           }
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -1395,13 +1399,14 @@
         return;
       }
       
+      const saveBtn = event?.target;
+      
       try {
         const data = {
           subtitle: subtitle,
           activities: activities
         };
         
-        const saveBtn = event?.target;
         if (saveBtn) {
           saveBtn.innerHTML = '💾 Saving...';
           saveBtn.disabled = true;
@@ -1425,6 +1430,9 @@
             localStorage.removeItem('googleAccessToken');
             showNotification('Session expired. Please reconnect.', 'error');
             requestGoogleDriveAccess();
+            return;
+          } else if (response.status === 403) {
+            showNotification('Access denied. You may not have edit permissions.', 'error');
             return;
           }
           throw new Error(`HTTP error! status: ${response.status}`);

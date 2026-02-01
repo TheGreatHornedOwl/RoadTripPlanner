@@ -8,6 +8,7 @@ function bootstrap() {
 function wireMenuEvents() {
   document.addEventListener('click', e => {
     if (e.target.closest('.js-menu-toggle')) {
+      console.log('menu toggle clicked');
       toggleMenu();
     }
 
@@ -16,6 +17,7 @@ function wireMenuEvents() {
     }
   });
 }
+
 
 function importData() {
   try {

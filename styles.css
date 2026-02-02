@@ -419,6 +419,79 @@
       color: white;
     }
 
+/* Utility classes to remove inline styles */
+.hidden { display: none !important; }
+.full-width { width: 100%; }
+.account-heading { font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px; }
+.filter-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.filter-input { width: 100%; margin-bottom: 0.8rem; }
+.gdrive-actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+.activity-duration { color: var(--desert-sand); margin-left: 1rem; }
+.activity-notes { margin-top: 1rem; }
+.alert-warning { padding: 1rem; background: #fff3cd; border-radius: 10px; color: #856404; font-size: 0.9rem; margin-bottom: 1rem; }
+.alert-info { padding: 1rem; background: #d1ecf1; border-radius: 10px; color: #0c5460; font-size: 0.85rem; }
+
+/* Copy button visual state */
+button.copied { background: linear-gradient(135deg, var(--map-green), var(--sky-blue)) !important; }
+
+/* Animation delay helper classes (day: 0.1s steps, item: 0.05s steps) */
+/* Day delays */
+.delay-day-0 { animation-delay: 0s; }
+.delay-day-1 { animation-delay: 0.1s; }
+.delay-day-2 { animation-delay: 0.2s; }
+.delay-day-3 { animation-delay: 0.3s; }
+.delay-day-4 { animation-delay: 0.4s; }
+.delay-day-5 { animation-delay: 0.5s; }
+.delay-day-6 { animation-delay: 0.6s; }
+.delay-day-7 { animation-delay: 0.7s; }
+.delay-day-8 { animation-delay: 0.8s; }
+.delay-day-9 { animation-delay: 0.9s; }
+.delay-day-10 { animation-delay: 1s; }
+.delay-day-11 { animation-delay: 1.1s; }
+.delay-day-12 { animation-delay: 1.2s; }
+.delay-day-13 { animation-delay: 1.3s; }
+.delay-day-14 { animation-delay: 1.4s; }
+.delay-day-15 { animation-delay: 1.5s; }
+.delay-day-16 { animation-delay: 1.6s; }
+.delay-day-17 { animation-delay: 1.7s; }
+.delay-day-18 { animation-delay: 1.8s; }
+.delay-day-19 { animation-delay: 1.9s; }
+/* Item delays */
+.delay-item-0 { animation-delay: 0s; }
+.delay-item-1 { animation-delay: 0.05s; }
+.delay-item-2 { animation-delay: 0.1s; }
+.delay-item-3 { animation-delay: 0.15s; }
+.delay-item-4 { animation-delay: 0.2s; }
+.delay-item-5 { animation-delay: 0.25s; }
+.delay-item-6 { animation-delay: 0.3s; }
+.delay-item-7 { animation-delay: 0.35s; }
+.delay-item-8 { animation-delay: 0.4s; }
+.delay-item-9 { animation-delay: 0.45s; }
+.delay-item-10 { animation-delay: 0.5s; }
+.delay-item-11 { animation-delay: 0.55s; }
+.delay-item-12 { animation-delay: 0.6s; }
+.delay-item-13 { animation-delay: 0.65s; }
+.delay-item-14 { animation-delay: 0.7s; }
+.delay-item-15 { animation-delay: 0.75s; }
+.delay-item-16 { animation-delay: 0.8s; }
+.delay-item-17 { animation-delay: 0.85s; }
+.delay-item-18 { animation-delay: 0.9s; }
+.delay-item-19 { animation-delay: 0.95s; }
+
+/* Subtitle editor styles (no inline styles) */
+.subtitle-editor {
+  font-family: 'Caveat', cursive;
+  font-size: 1.8rem;
+  color: var(--road-gray);
+  border: 3px solid var(--sunset-orange);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  background: white;
+  text-align: center;
+  width: 400px;
+  max-width: 90vw;
+}
+
     .activity-details {
       margin-bottom: 1rem;
       line-height: 1.8;

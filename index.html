@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tom's Road Trip Planner</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com https://ssl.gstatic.com; script-src-elem 'self' https://accounts.google.com https://ssl.gstatic.com; style-src 'self' https://fonts.googleapis.com https://accounts.google.com; style-src-elem 'self' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com https://accounts.google.com data:; connect-src 'self' https://www.googleapis.com; frame-src https://accounts.google.com; img-src 'self' data: https://lh3.googleusercontent.com;">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E🚗%3C/text%3E%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="stylesheet" href="styles.css">
@@ -12,8 +14,8 @@
   <div class="container">
     <header>
       <h1>ROAD TRIP</h1>
-      <div class="tagline" onclick="editSubtitle()" id="subtitle" title="Click to edit">Plan Your Perfect Journey</div>
-      <div id="userIndicator" class="user-indicator" style="display: none;">
+      <div class="tagline" id="subtitle" title="Click to edit">Plan Your Perfect Journey</div>
+      <div id="userIndicator" class="user-indicator hidden">
         <img id="userAvatar" class="user-avatar" src="" alt="">
         <span id="userName"></span>
       </div>
@@ -21,57 +23,57 @@
 
     <!-- Map View Button -->
     <div class="map-menu">
-      <button class="map-btn" onclick="openMapView()" title="View on Map">
+      <button class="map-btn" id="mapBtn" title="View on Map">
         🗺️
       </button>
     </div>
 
     <!-- Hamburger Menu -->
     <div class="hamburger-menu">
-      <button class="hamburger-btn" onclick="toggleMenu()">
+      <button class="hamburger-btn" id="hamburgerBtn">
         <span></span>
         <span></span>
         <span></span>
       </button>
     </div>
 
-    <div class="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="menu-overlay" id="menuOverlay"></div>
     <div class="menu-panel">
       <!-- User Profile Section -->
       <div class="user-profile-section">
         <div id="loggedOutView">
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px;">Account</h3>
+          <h3 class="account-heading">Account</h3>
           <div id="googleButtonContainer"></div>
         </div>
 
-        <div id="loggedInView" style="display: none;">
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px;">Account</h3>
+        <div id="loggedInView" class="hidden">
+          <h3 class="account-heading">Account</h3>
           <div class="user-profile-card">
             <img id="menuUserAvatar" class="user-profile-avatar" src="" alt="">
             <div class="user-profile-name" id="menuUserName"></div>
             <div class="user-profile-email" id="menuUserEmail"></div>
           </div>
-          <button class="btn-danger" onclick="logout()" style="width: 100%;">Logout</button>
+          <button class="btn-danger full-width" id="logoutBtn">Logout</button>
         </div>
       </div>
 
       <div class="menu-section">
         <h3>Add Activity</h3>
-        <button class="btn-primary" onclick="openAddModal(); toggleMenu();">+ New Activity</button>
+        <button class="btn-primary" id="newActivityBtn">+ New Activity</button>
       </div>
 
       <div class="menu-section">
         <h3>Filter</h3>
-        <label for="filterDate" style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Select Date:</label>
-        <input type="date" id="filterDate" onchange="filterActivities()" style="width: 100%; margin-bottom: 0.8rem;">
-        <button class="btn-secondary" onclick="clearFilter()">Show All Days</button>
+        <label for="filterDate" class="filter-label">Select Date:</label>
+        <input type="date" id="filterDate" class="filter-input">
+        <button class="btn-secondary" id="clearFilterBtn">Show All Days</button>
       </div>
 
       <div class="menu-section">
         <h3>Tools</h3>
         
         <!-- Google Drive Sync Section -->
-        <div class="gdrive-sync-section" id="gdriveSyncSection" style="display: none;">
+        <div class="gdrive-sync-section hidden" id="gdriveSyncSection">
           <div class="gdrive-sync-title">
             📁 Google Drive Sync
           </div>
@@ -86,25 +88,25 @@
               value="1lxkUvkts9T0fmOPFrFihsPlC_IEOPq5M"
             >
             <div class="gdrive-button-group">
-              <button class="btn-secondary" onclick="connectGoogleDrive()">Connect</button>
+              <button class="btn-secondary" id="connectGDriveBtn">Connect</button>
             </div>
           </div>
-          <div class="gdrive-button-group" id="gdriveActions" style="display: none; margin-top: 1rem;">
-            <button class="btn-primary" onclick="syncFromGoogleDrive()">
+          <div class="gdrive-button-group gdrive-actions hidden" id="gdriveActions">
+            <button class="btn-primary" id="syncGDriveBtn">
               🔄 Refresh
             </button>
-            <button class="btn-secondary" onclick="saveToGoogleDrive()">
+            <button class="btn-secondary" id="saveGDriveBtn">
               💾 Save to Drive
             </button>
-            <button class="btn-danger btn-small" onclick="disconnectGoogleDrive()">
+            <button class="btn-danger btn-small" id="disconnectGDriveBtn">
               Disconnect
             </button>
           </div>
         </div>
         
-        <button class="btn-secondary" onclick="exportData(); toggleMenu();">Export Trip Data</button>
-        <button class="btn-secondary" onclick="openImportModal(); toggleMenu();">Import from JSON</button>
-        <button class="btn-danger" onclick="clearAllData()">Clear All Activities</button>
+        <button class="btn-secondary" id="exportBtn">Export Trip Data</button>
+        <button class="btn-secondary" id="importBtn">Import from JSON</button>
+        <button class="btn-danger" id="clearAllBtn">Clear All Activities</button>
       </div>
     </div>
 
@@ -114,7 +116,7 @@
   <!-- Add/Edit Activity Modal -->
   <div id="activityModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close modal-close-btn">&times;</button>
       <h2 id="modalTitle">Add Activity</h2>
       <div id="activityForm">
         <div class="form-group">
@@ -155,8 +157,8 @@
         </div>
 
         <div class="button-group">
-          <button type="button" class="btn-primary" onclick="saveActivity()">Save Activity</button>
-          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn-primary" id="saveActivityBtn">Save Activity</button>
+          <button type="button" class="btn-secondary" id="cancelActivityBtn">Cancel</button>
         </div>
       </div>
     </div>
@@ -165,15 +167,15 @@
   <!-- Import Modal -->
   <div id="importModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeImportModal()">&times;</button>
+      <button class="modal-close modal-close-btn">&times;</button>
       <h2>Import Trip Data</h2>
       <div class="form-group">
         <label for="importJSON">Paste JSON Data</label>
         <textarea id="importJSON" class="json-export" placeholder='{"activities": [...]}'></textarea>
       </div>
       <div class="button-group">
-        <button class="btn-primary" onclick="importData()">Import</button>
-        <button class="btn-secondary" onclick="closeImportModal()">Cancel</button>
+        <button class="btn-primary" id="importDataBtn">Import</button>
+        <button class="btn-secondary" id="cancelImportBtn">Cancel</button>
       </div>
     </div>
   </div>
@@ -181,223 +183,21 @@
   <!-- Export Modal -->
   <div id="exportModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeExportModal()">&times;</button>
+      <button class="modal-close modal-close-btn">&times;</button>
       <h2>Export Trip Data</h2>
       <div class="form-group">
         <label for="exportJSON">Copy this JSON</label>
         <textarea id="exportJSON" class="json-export" readonly></textarea>
       </div>
       <div class="button-group">
-        <button class="btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
-        <button class="btn-secondary" onclick="downloadJSON()">Download File</button>
-        <button class="btn-secondary" onclick="closeExportModal()">Close</button>
+        <button class="btn-primary" id="copyExportBtn">Copy to Clipboard</button>
+        <button class="btn-secondary" id="downloadExportBtn">Download File</button>
+        <button class="btn-secondary" id="closeExportBtn">Close</button>
       </div>
     </div>
   </div>
 
-  <script>
-    let activities = [];
-    let editingId = null;
-    let filterDate = null;
-    let subtitle = 'Plan Your Perfect Journey';
-    let currentUser = null;
-    let googleClientId = '548418558127-oq09sbqgdslma396aukj2alh672qaona.apps.googleusercontent.com';
-    let googleDriveFileId = null;
-    let googleAccessToken = null;
-
-    // Simple JWT decoder (client-side only)
-    function decodeJWT(token) {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-      } catch (error) {
-        console.error('Error decoding JWT:', error);
-        return null;
-      }
-    }
-
-    // Initialize Google Sign-In
-    function initGoogleSignIn() {
-      // Wait for script to load, with retry mechanism
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      const checkGoogleLoaded = setInterval(() => {
-        attempts++;
-        
-        if (typeof google !== 'undefined' && google.accounts) {
-          clearInterval(checkGoogleLoaded);
-          
-          google.accounts.id.initialize({
-            client_id: googleClientId,
-            callback: handleGoogleResponse,
-            auto_select: false,
-            cancel_on_tap_outside: true
-          });
-          
-          // Render the button in the container
-          renderGoogleButton();
-          
-        } else if (attempts >= maxAttempts) {
-          clearInterval(checkGoogleLoaded);
-          console.warn('Google Identity Services not loaded after multiple attempts.');
-          showFallbackMessage();
-        }
-      }, 300);
-    }
-
-    // Render Google Sign-In button
-    function renderGoogleButton() {
-      const buttonContainer = document.getElementById('googleButtonContainer');
-      if (buttonContainer && typeof google !== 'undefined') {
-        google.accounts.id.renderButton(
-          buttonContainer,
-          {
-            theme: 'outline',
-            size: 'large',
-            width: 350,
-            text: 'signin_with',
-            shape: 'rectangular'
-          }
-        );
-      }
-    }
-
-    // Show fallback message
-    function showFallbackMessage() {
-      const loggedOutView = document.getElementById('loggedOutView');
-      if (loggedOutView && !currentUser) {
-        loggedOutView.innerHTML = `
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--sunset-orange); margin-bottom: 1rem; letter-spacing: 2px;">Account</h3>
-          <div style="padding: 1rem; background: #fff3cd; border-radius: 10px; color: #856404; font-size: 0.9rem; margin-bottom: 1rem;">
-            ⚠️ Google Sign-In is blocked by Content Security Policy in Claude artifacts.
-          </div>
-          <div style="padding: 1rem; background: #d1ecf1; border-radius: 10px; color: #0c5460; font-size: 0.85rem;">
-            <strong>💡 Workaround:</strong> Download this HTML file and open it in your browser, or host it on your own domain to enable Google Sign-In.
-          </div>
-        `;
-      }
-    }
-
-    // Handle Google Sign-In response
-    function handleGoogleResponse(response) {
-      const userData = decodeJWT(response.credential);
-      if (userData) {
-        currentUser = {
-          id: userData.sub,
-          name: userData.name,
-          email: userData.email,
-          picture: userData.picture,
-          token: response.credential
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('roadtripUser', JSON.stringify(currentUser));
-        
-        updateUIForUser();
-        showNotification(`Welcome, ${currentUser.name}!`, 'success');
-        
-        // Request Google Drive access token with necessary scopes
-        setTimeout(() => requestGoogleDriveAccess(), 500);
-      }
-    }
-
-    // Request Google Drive access with OAuth 2.0
-    function requestGoogleDriveAccess() {
-      // Show the section immediately
-      document.getElementById('gdriveSyncSection').style.display = 'block';
-      
-      if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-        const tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: googleClientId,
-          scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly',
-          callback: (tokenResponse) => {
-            if (tokenResponse && tokenResponse.access_token) {
-              googleAccessToken = tokenResponse.access_token;
-              localStorage.setItem('googleAccessToken', googleAccessToken);
-              showNotification('Google Drive access granted!', 'success');
-            } else if (tokenResponse && tokenResponse.error) {
-              showNotification('Drive access denied. You can still use local storage.', 'info');
-            }
-          },
-        });
-        tokenClient.requestAccessToken();
-      } else {
-        // Fallback - show section anyway
-        showNotification('Google Drive sync available - connect to enable', 'info');
-      }
-    }
-
-    // Sign in with Google
-    function signInWithGoogle() {
-      if (typeof google !== 'undefined' && google.accounts) {
-        google.accounts.id.prompt();
-      } else {
-        showNotification('Google Sign-In is not available in this environment', 'error');
-      }
-    }
-
-    // Logout
-    function logout() {
-      currentUser = null;
-      googleAccessToken = null;
-      googleDriveFileId = null;
-      localStorage.removeItem('roadtripUser');
-      localStorage.removeItem('googleAccessToken');
-      localStorage.removeItem('googleDriveFileId');
-      
-      // Revoke Google access
-      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        google.accounts.id.revoke(currentUser?.email, () => {
-          console.log('Access revoked');
-        });
-      }
-      
-      updateUIForUser();
-      showNotification('Logged out successfully', 'success');
-      toggleMenu();
-    }
-
-    // Connect to Google Drive file
-    function connectGoogleDrive() {
-      const fileId = document.getElementById('gdriveFileId').value.trim();
-      
-      if (!fileId) {
-        showNotification('Please enter a File ID', 'error');
-        return;
-      }
-      
-      if (!googleAccessToken) {
-        showNotification('Please sign in with Google first', 'error');
-        requestGoogleDriveAccess();
-        return;
-      }
-      
-      googleDriveFileId = fileId;
-      localStorage.setItem('googleDriveFileId', fileId);
-      
-      // Update UI
-      document.getElementById('gdriveSetup').style.display = 'none';
-      document.getElementById('gdriveActions').style.display = 'flex';
-      document.getElementById('gdriveStatus').innerHTML = '<span class="gdrive-status connected">✓ Connected</span>';
-      
-      showNotification('Connected to Google Drive', 'success');
-      
-      // Auto-sync on connect
-      syncFromGoogleDrive();
-    }
-
-    // Disconnect from Google Drive
-    function disconnectGoogleDrive() {
-      googleDriveFileId = null;
-      localStorage.removeItem('googleDriveFileId');
-      
-      document.getElementById('gdriveSetup').style.display = 'block';
-      document.getElementById('gdriveActions').style.display = 'none';
+  <script src="main.js" defer></script>
       document.getElementById('gdriveStatus').innerHTML = '<span class="gdrive-status disconnected">Not Connected</span>';
       
       showNotification('Disconnected from Google Drive', 'info');
@@ -566,108 +366,12 @@
       }
     }
 
-    // Load user from localStorage
-    function loadUser() {
-      const savedUser = localStorage.getItem('roadtripUser');
-      const savedToken = localStorage.getItem('googleAccessToken');
-      const savedFileId = localStorage.getItem('googleDriveFileId');
-      
-      if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          googleAccessToken = savedToken;
-          googleDriveFileId = savedFileId;
-          updateUIForUser();
-        } catch (error) {
-          console.error('Error loading user:', error);
-          localStorage.removeItem('roadtripUser');
-          localStorage.removeItem('googleAccessToken');
-          localStorage.removeItem('googleDriveFileId');
-        }
-      }
-    }
+    // load/save and menu toggle logic moved to `main.js` to comply with CSP and avoid inline scripts
+    // See `main.js` for `initAppState`, `toggleMenu`, and storage helpers
 
-    // Toggle hamburger menu
-    function toggleMenu() {
-      const btn = document.querySelector('.hamburger-btn');
-      const panel = document.querySelector('.menu-panel');
-      const overlay = document.querySelector('.menu-overlay');
-      
-      btn.classList.toggle('active');
-      panel.classList.toggle('active');
-      overlay.classList.toggle('active');
-    }
 
-    // Load data from localStorage on startup
-    function loadData() {
-      const saved = localStorage.getItem('roadtripActivities');
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          // Support both old format (just array) and new format (object with subtitle)
-          if (Array.isArray(data)) {
-            activities = data;
-          } else {
-            activities = data.activities || [];
-            subtitle = data.subtitle || 'Plan Your Perfect Journey';
-            document.getElementById('subtitle').textContent = subtitle;
-          }
-        } catch (e) {
-          activities = [];
-        }
-      }
-      renderTimeline();
-    }
-
-    // Save data to localStorage
-    function saveData() {
-      const data = {
-        subtitle: subtitle,
-        activities: activities
-      };
-      localStorage.setItem('roadtripActivities', JSON.stringify(data));
-    }
-
-    // Edit subtitle
-    function editSubtitle() {
-      const subtitleEl = document.getElementById('subtitle');
-      const currentText = subtitleEl.textContent;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = currentText;
-      input.style.cssText = `
-        font-family: 'Caveat', cursive;
-        font-size: 1.8rem;
-        color: var(--road-gray);
-        border: 3px solid var(--sunset-orange);
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        background: white;
-        text-align: center;
-        width: 400px;
-        max-width: 90vw;
-      `;
-      
-      input.onblur = function() {
-        const newText = input.value.trim() || 'Plan Your Perfect Journey';
-        subtitle = newText;
-        subtitleEl.textContent = newText;
-        saveData();
-      };
-      
-      input.onkeydown = function(e) {
-        if (e.key === 'Enter') {
-          input.blur();
-        } else if (e.key === 'Escape') {
-          subtitleEl.textContent = currentText;
-        }
-      };
-      
-      subtitleEl.textContent = '';
-      subtitleEl.appendChild(input);
-      input.focus();
-      input.select();
-    }
+    // Subtitle editor moved to `main.js` (uses a class-based editor to comply with CSP)
+    // See `main.js` for the enhanced implementation
 
     // Calculate end time based on start time and duration
     function calculateEndTime(startDateTime, durationHours) {
@@ -876,148 +580,6 @@
         grouped[date].push(activity);
       });
       
-      return grouped;
-    }
-
-    // Render timeline
-    function renderTimeline() {
-      const timeline = document.getElementById('timeline');
-      
-      let activitiesToRender = activities;
-      if (filterDate) {
-        activitiesToRender = activities.filter(a => a.startDateTime.startsWith(filterDate));
-      }
-      
-      if (activitiesToRender.length === 0) {
-        timeline.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">🗺️</div>
-            <h3>No Activities Yet</h3>
-            <p>Start planning your adventure by adding your first activity!</p>
-          </div>
-        `;
-        return;
-      }
-      
-      const groupedActivities = groupByDay(activitiesToRender);
-      
-      let html = '';
-      Object.keys(groupedActivities).sort().forEach((date, dayIndex) => {
-        const dayActivities = groupedActivities[date];
-        
-        html += `
-          <div class="day-section" style="animation-delay: ${dayIndex * 0.1}s">
-            <div class="day-header">${formatDate(date)}</div>
-        `;
-        
-        dayActivities.forEach((activity, actIndex) => {
-          const typeEmoji = {
-            driving: '🚗',
-            eating: '🍽️',
-            sleeping: '🛏️',
-            other: '🎯'
-          };
-          
-          html += `
-            <div class="activity-card ${activity.type}" style="animation-delay: ${(dayIndex * 0.1) + (actIndex * 0.05)}s">
-              <div class="activity-header">
-                <div class="activity-title">${typeEmoji[activity.type]} ${activity.name}</div>
-                <div class="activity-type ${activity.type}">${activity.type}</div>
-              </div>
-              
-              <div class="activity-time">
-                ${formatTime(activity.startDateTime)} 
-                <span class="time-arrow">→</span> 
-                ${formatTime(activity.endDateTime)}
-                <span style="color: var(--desert-sand); margin-left: 1rem;">(${activity.duration} hrs)</span>
-              </div>
-              
-              <div class="activity-details">
-                <a href="${getDirectionsUrl(activity.address)}" 
-                   target="_blank" 
-                   class="address-link">
-                  📍 ${activity.address}
-                </a>
-                ${activity.notes ? `<p style="margin-top: 1rem;"><strong>Notes:</strong> ${activity.notes}</p>` : ''}
-              </div>
-              
-              <div class="activity-actions">
-                <button class="btn-secondary btn-small" onclick="openEditModal(${activity.id})">
-                  Edit
-                </button>
-                <button class="btn-danger btn-small" onclick="deleteActivity(${activity.id})">
-                  Delete
-                </button>
-              </div>
-            </div>
-          `;
-        });
-        
-        html += '</div>';
-      });
-      
-      timeline.innerHTML = html;
-    }
-
-    // Filter activities
-    function filterActivities() {
-      filterDate = document.getElementById('filterDate').value;
-      renderTimeline();
-    }
-
-    // Clear filter
-    function clearFilter() {
-      filterDate = null;
-      document.getElementById('filterDate').value = '';
-      renderTimeline();
-    }
-
-    // Export data
-    function exportData() {
-      const data = JSON.stringify({ subtitle, activities }, null, 2);
-      document.getElementById('exportJSON').value = data;
-      document.getElementById('exportModal').classList.add('active');
-    }
-
-    // Close export modal
-    function closeExportModal() {
-      document.getElementById('exportModal').classList.remove('active');
-    }
-
-    // Copy to clipboard
-    function copyToClipboard() {
-      const textarea = document.getElementById('exportJSON');
-      textarea.select();
-      document.execCommand('copy');
-      
-      // Visual feedback instead of alert
-      const btn = event.target;
-      const originalText = btn.textContent;
-      btn.textContent = '✓ Copied!';
-      btn.style.background = 'linear-gradient(135deg, var(--map-green), var(--sky-blue))';
-      setTimeout(() => {
-        btn.textContent = originalText;
-        btn.style.background = '';
-      }, 2000);
-    }
-
-    // Download JSON file
-    function downloadJSON() {
-      const data = document.getElementById('exportJSON').value;
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `roadtrip-${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // Open import modal
-    function openImportModal() {
-      document.getElementById('importJSON').value = '';
-      document.getElementById('importModal').classList.add('active');
-    }
 
     // Close import modal
     function closeImportModal() {
@@ -1077,10 +639,6 @@
       }, 3000);
     }
 
-    // Initialize
-    loadUser();
-    initGoogleSignIn();
-    loadData();
-  </script>
+
 </body>
 </html>

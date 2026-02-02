@@ -429,6 +429,20 @@
         );
         
         if (!response.ok) {
+          // Try to parse the error body for helpful messages
+          let apiErrorMessage = `HTTP ${response.status}`;
+          try {
+            const errJson = await response.json();
+            console.error('Google Drive API error:', errJson);
+            if (errJson && errJson.error && errJson.error.message) {
+              apiErrorMessage = `${errJson.error.message} (code: ${errJson.error.code || response.status})`;
+            } else if (errJson && errJson.message) {
+              apiErrorMessage = `${errJson.message} (code: ${response.status})`;
+            }
+          } catch (e) {
+            console.error('Failed to parse Drive error body:', e);
+          }
+
           if (response.status === 401) {
             // Token expired, request new one
             googleAccessToken = null;
@@ -437,10 +451,10 @@
             requestGoogleDriveAccess();
             return;
           } else if (response.status === 403) {
-            showNotification('Access denied. Make sure the file is shared with you.', 'error');
+            showNotification('Access denied. ' + apiErrorMessage, 'error');
             return;
           }
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(apiErrorMessage);
         }
         
         const data = await response.json();
@@ -501,6 +515,20 @@
         );
         
         if (!response.ok) {
+          // Parse error body to surface meaningful API messages
+          let apiErrorMessage = `HTTP ${response.status}`;
+          try {
+            const errJson = await response.json();
+            console.error('Google Drive API error:', errJson);
+            if (errJson && errJson.error && errJson.error.message) {
+              apiErrorMessage = `${errJson.error.message} (code: ${errJson.error.code || response.status})`;
+            } else if (errJson && errJson.message) {
+              apiErrorMessage = `${errJson.message} (code: ${response.status})`;
+            }
+          } catch (e) {
+            console.error('Failed to parse Drive error body:', e);
+          }
+
           if (response.status === 401) {
             googleAccessToken = null;
             localStorage.removeItem('googleAccessToken');
@@ -508,10 +536,10 @@
             requestGoogleDriveAccess();
             return;
           } else if (response.status === 403) {
-            showNotification('Access denied. You may not have edit permissions.', 'error');
+            showNotification('Access denied. ' + apiErrorMessage, 'error');
             return;
           }
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(apiErrorMessage);
         }
         
         showNotification('✓ Saved to Google Drive', 'success');
@@ -523,6 +551,75 @@
           saveBtn.innerHTML = '💾 Save to Drive';
           saveBtn.disabled = false;
         }
+      }
+    }
+
+    // Debug helper: check access token and fetch file metadata to diagnose permission errors
+    async function debugDriveAccess() {
+      if (!googleAccessToken || !googleDriveFileId) {
+        showNotification('Sign in and enter a File ID first', 'error');
+        console.warn('Missing googleAccessToken or googleDriveFileId', { googleAccessToken, googleDriveFileId });
+        return;
+      }
+
+      showNotification('Debugging Google Drive access (see console)...', 'info');
+
+      try {
+        // 1) Token info
+        try {
+          const tokenInfoResp = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${encodeURIComponent(googleAccessToken)}`);
+          const tokenInfo = await tokenInfoResp.json();
+          console.group('Google Access Token Info');
+          console.log('tokeninfo status:', tokenInfoResp.status);
+          console.log(tokenInfo);
+          console.groupEnd();
+        } catch (e) {
+          console.error('Failed to fetch token info:', e);
+        }
+
+        // 2) File metadata
+        const metaResp = await fetch(
+          `https://www.googleapis.com/drive/v3/files/${googleDriveFileId}?fields=id,name,mimeType,owners,permissions,sharingUser`,
+          {
+            headers: {
+              'Authorization': `Bearer ${googleAccessToken}`
+            }
+          }
+        );
+
+        let metaBody;
+        try {
+          metaBody = await metaResp.json();
+        } catch (e) {
+          metaBody = await metaResp.text();
+        }
+
+        console.group('Drive File Metadata Response');
+        console.log('status:', metaResp.status);
+        console.log(metaBody);
+        console.groupEnd();
+
+        if (!metaResp.ok) {
+          // If we got a JSON error, show it
+          const msg = (metaBody && metaBody.error && metaBody.error.message) ? metaBody.error.message : `HTTP ${metaResp.status}`;
+          showNotification('Drive metadata fetch failed: ' + msg, 'error');
+          // Helpful hint for common issues
+          if (metaResp.status === 403) {
+            console.warn('403 Forbidden - possible causes: file not shared with this account, token lacks proper Drive scopes, or file is a Google Docs native mimeType requiring export.');
+          }
+          return;
+        }
+
+        showNotification('Drive metadata retrieved — check console for details', 'success');
+
+        // If this is a native Google Docs type, we cannot GET alt=media; must use files/export
+        if (metaBody && metaBody.mimeType && metaBody.mimeType.startsWith('application/vnd.google-apps')) {
+          console.warn('File is a native Google Workspace file (e.g., Google Docs/Sheets). Use the Drive export endpoint to download content.');
+          showNotification('File is a Google Docs type — use export API (see console)', 'info');
+        }
+      } catch (error) {
+        console.error('Error debugging Drive access:', error);
+        showNotification('Debug failed: ' + error.message, 'error');
       }
     }
 
